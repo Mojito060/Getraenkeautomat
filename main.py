@@ -1,16 +1,31 @@
-# This is a sample Python script.
+import sqlite3
+import pandas as pd
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+con = sqlite3.connect("getraenke.db")
+
+cur = con.cursor()
+cur.execute('''CREATE TABLE IF NOT EXISTS getraenke
+                (name text, preis text, bestand text)''')
+con.commit()
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+def display():
+    with sqlite3.connect("getraenke.db") as db:
+        c = db.cursor()
+        c.execute("CREATE VIEW IF NOT EXISTS test_VIEW AS SELECT name, preis, bestand FROM data")
+        db.commit()
+        data_pd = pd.read_sql('SELECT * FROM test_VIEW', db)
+        print(data_pd)
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+option = input("Was möchtest du machen? \n1: Getränk kaufen. \n2: Admin Panel")
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+if option == "1":
+    print("Getränkeautomat")
+
+if option == "2":
+    print("Admin panel")
+
+
+else:
+    print("Ungültige eingabe")
