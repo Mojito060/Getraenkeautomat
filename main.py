@@ -1,5 +1,5 @@
 import sqlite3
-import pandas as pd
+import re
 
 con = sqlite3.connect("getraenke.db")
 
@@ -13,7 +13,11 @@ option = input("Was möchtest du machen? \n1: Getränk kaufen. \n2: Admin Panel"
 if option == "1":
     print("Getränkeautomat")
     cur.execute("SELECT * FROM getraenke")
-    print(cur.fetchall())
+    dbOutput = cur.fetchall()
+    dbOutputString = str(dbOutput)
+    dbOutputStringLineBreak = re.sub(r'(\))', r'\1\n', dbOutputString)
+    print(re.sub('[^a-zA-Z0-9 \n\.]', '', dbOutputStringLineBreak))
+    #print(re.sub(r'[^\w]', ' ',dbOutputStringLineBreak))
     inputAuswahl = input("Welches Getränk willst du? \n Name:")
     sql = '''SELECT * FROM getraenke WHERE name=\"''' + inputAuswahl + "\";"
     for row in cur.execute(sql):
