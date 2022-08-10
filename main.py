@@ -1,6 +1,7 @@
 import re
 import sqlite3
 import hashlib
+import pandas as pd
 
 m = hashlib.sha256()
 con = sqlite3.connect("getraenke.db")
@@ -18,8 +19,7 @@ if option == "1":
     dbOutput = cur.fetchall()
     dbOutputString = str(dbOutput)
     dbOutputStringLineBreak = re.sub(r'(\))', r'\1\n', dbOutputString)
-    print(re.sub('[^a-zA-Z0-9 \n\.]', '', dbOutputStringLineBreak))
-    #print(re.sub(r'[^\w]', ' ',dbOutputStringLineBreak))
+    print(pd.read_sql_query("SELECT * FROM getraenke", con))
     inputAuswahl = input("Welches Getränk willst du? \n Name:")
     sql = '''SELECT * FROM getraenke WHERE name=\"''' + inputAuswahl + "\";"
     for row in cur.execute(sql):
