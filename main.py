@@ -56,7 +56,8 @@ elif option == "2":
     print(lines)
     if passwortEingabeHashed == lines:
         print("Admin panel")
-        getraenkeId = random.randrange(999)
+        cursor = con.execute('select * from getraenke;')
+        getraenkeId = len(cursor.fetchall())
         getraenkeName = input("Wie heißt das Getränk?")
         getraenkePreis = input("Wie viel kostet es?")
         getraenkeAnzahl = input("Wie viele Getränke werden nachgefüllt?")
