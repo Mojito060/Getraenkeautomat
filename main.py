@@ -17,8 +17,8 @@ def bestandUpdate(id):
     try:
         print("Connected to SQLite")
 
-        sql_update_query = '''UPDATE getraenke SET bestand = bestand - 1 WHERE id=\"''' + id + "\";"
-        cur.execute(sql_update_query)
+        sqlUpdateQuery = '''UPDATE getraenke SET bestand = bestand - 1 WHERE id=\"''' + id + "\";"
+        cur.execute(sqlUpdateQuery)
         con.commit()
         print("Record Updated successfully ")
 
@@ -30,6 +30,7 @@ option = input("Was möchtest du machen? \n1: Getränk kaufen. \n2: Admin Panel.
 
 if option == "1":
     print("Getränkeautomat")
+    cur.execute("DELETE FROM getraenke WHERE bestand = 0;")
     cur.execute("SELECT * FROM getraenke")
     dbOutput = cur.fetchall()
     dbOutputString = str(dbOutput)
@@ -53,17 +54,25 @@ elif option == "2":
         lines = f.read()
     passwortEingabe = input("Bitte gebe dein Admin passwort ein:")
     passwortEingabeHashed = hashlib.sha224(str.encode(passwortEingabe)).hexdigest()
-    print(lines)
     if passwortEingabeHashed == lines:
-        print("Admin panel")
-        cursor = con.execute('select * from getraenke;')
-        getraenkeId = len(cursor.fetchall())
-        getraenkeName = input("Wie heißt das Getränk?")
-        getraenkePreis = input("Wie viel kostet es?")
-        getraenkeAnzahl = input("Wie viele Getränke werden nachgefüllt?")
-        cur.execute("INSERT INTO getraenke (id, name, preis, bestand)VALUES (?, ?, ?, ?)",
-                    (getraenkeId, getraenkeName, getraenkePreis, getraenkeAnzahl))
-        con.commit()
+        userSelection = input("Admin panel \n1: Getränk hinzufügen \n2: Getränk löschen")
+        if userSelection == "1":
+            cursor = con.execute('select * from getraenke;')
+            getraenkeId = len(cursor.fetchall())
+            getraenkeName = input("Wie heißt das Getränk?")
+            getraenkePreis = input("Wie viel kostet es?")
+            getraenkeAnzahl = input("Wie viele Getränke werden nachgefüllt?")
+            cur.execute("INSERT INTO getraenke (id, name, preis, bestand)VALUES (?, ?, ?, ?)",
+                        (getraenkeId, getraenkeName, getraenkePreis, getraenkeAnzahl))
+            con.commit()
+        elif userSelection == "2":
+            print("Getränk löschen")
+            print(pd.read_sql_query("SELECT * FROM getraenke", con))
+            userInput = input("Welches Getränk möchtest du löschen? \n Id:")
+            cur.execute('''DELETE FROM getraenke WHERE id=\"''' + userInput + "\";")
+            con.commit()
+        else:
+            print("Keine gültige eingabe")
     else:
         print("Passwort ist falsch")
 
